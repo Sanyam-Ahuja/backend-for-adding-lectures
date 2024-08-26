@@ -62,7 +62,6 @@ def process_playlist(subject_name, playlist_url, user_id):
         print("Error processing playlist:", e)
         return "Failed to process playlist"
 
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -77,4 +76,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, port=5001)  # Change port if necessary
