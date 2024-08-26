@@ -1,17 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, request, jsonify
 import psycopg2
 from pytube import Playlist
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management and flashing messages
-
-# Google Sheets API configuration
-SERVICE_ACCOUNT_FILE = './hmm.json'  # Path to your service account file
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-SHEET_ID = '1Yndq4S9SNnfP38oj5wl5sS3a6_PUiWN-CE9zTy8KfYo'  # Your Google Sheet ID
-RANGE_NAME = 'Sheet1!A2:B'  # Range of cells to read
 
 def connect_to_db():
     try:
@@ -70,18 +62,6 @@ def process_playlist(subject_name, playlist_url, user_id):
         print("Error processing playlist:", e)
         return "Failed to process playlist"
 
-def fetch_sheets_data():
-    creds = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES
-    )
-    service = build('sheets', 'v4', credentials=creds)
-    sheet = service.spreadsheets()
-
-    result = sheet.values().get(spreadsheetId=SHEET_ID, range=RANGE_NAME).execute()
-    values = result.get('values', [])
-
-    return values
-
 @app.route('/process_user', methods=['POST'])
 def process_user():
     data = request.get_json()
@@ -90,17 +70,12 @@ def process_user():
     if not user_id:
         return jsonify({'error': 'User ID is required'}), 400
 
-    # Fetch data from Google Sheets
-    sheet_data = fetch_sheets_data()
+    # For simplicity, let's assume you have some predefined subject_name and playlist_url
+    subject_name = 'Default Subject'  # You might want to get this dynamically
+    playlist_url = 'https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID'  # Replace with actual playlist URL
 
-    for row in sheet_data:
-        if len(row) >= 2:
-            subject_name = row[0]
-            playlist_url = row[1]
-            message = process_playlist(subject_name, playlist_url, user_id)
-            return jsonify({'message': message})
-
-    return jsonify({'error': 'No data found in Google Sheets'}), 404
+    message = process_playlist(subject_name, playlist_url, user_id)
+    return jsonify({'message': message})
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
