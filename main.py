@@ -62,20 +62,6 @@ def process_playlist(subject_name, playlist_url, user_id):
         print("Error processing playlist:", e)
         return "Failed to process playlist"
 
-@app.route('/process_user', methods=['POST'])
-def process_user():
-    data = request.get_json()
-    user_id = data.get('user_id')
-
-    if not user_id:
-        return jsonify({'error': 'User ID is required'}), 400
-
-    # For simplicity, let's assume you have some predefined subject_name and playlist_url
-    subject_name = 'Default Subject'  # You might want to get this dynamically
-    playlist_url = 'https://www.youtube.com/playlist?list=YOUR_PLAYLIST_ID'  # Replace with actual playlist URL
-
-    message = process_playlist(subject_name, playlist_url, user_id)
-    return jsonify({'message': message})
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
