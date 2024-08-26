@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "linear-cinema-310801",
+  "private_key_id": "10eb2d036083cd08c9ab33f6638e8d539b417eaf",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCc6tocL1aMm1Zm\nb8vPTwGY/V/4u6QyM3l6KAd0J0T7zsKvkS9zEEh0bJBOx5qz4oSbgovgAcWGG2QJ\nCYOfy7F/iDMngTLqDHwUTordGqFgMUuz31zvMJU5IUyxTU9ktMUnqxorqJI2li+j\nLn5YruQW7Mhrha8ru4eNfwXUE4TAmEpJe9qYsCo1ZsmH8MtGxlUdD+A8x5hYMgXL\nnMkCrwpSVTFKs7Xd8MpBYnnFsd4rbuh74zN44AEmeJvsz8/b4PE7s10HaLa2M/tn\nWr/QVUOky0JhTpX6kudMN18uMDzaglaVbiVOLLHRoZU/XKWqBM7tNSZtnwiRPWYS\nnJSAJs2TAgMBAAECggEAOn28cZcfrufUS/jOQudTVCDWXlQrf176oBM9vAlLSIWo\nwmLfCgf+yg8Rt5vlybnc7k66LvTaGQQqxMecHbuC3WP6lXYucVnYAoXIc2SS1NVr\nP5A6BxrX9OS5vrlvp71OZFv+NFnwrpJLDYuuIwaGFRmMF7BMPIP5oj+//26LJHLJ\n5DO/YXQiNdZKZuHvUuPj8DtvEwfwa4ZD2pAZ5DaVS/vXgLjoN84tag9ICRXvyR/8\nrxuA0zTMwdYmzSwj8b5/nTnk11r9QQcfxyRczkq9CYQH7lD9HEl+AxLUY/j05Q4k\nAD7DujIEIgkfQOE52+uEmWhriGU6xsXWk3BA++xTKQKBgQDb/8u2eZ25bbchwtPK\n/F3JcHIegaPBcyC9Qda32iDcfD8+1KRpl+vIym6OKoaSwkesw1jHB9+JECxUZiLT\nMt8x5AHucs8pY/ez4bxugvGXQX+vKbOui8L76/8kpOFM75koimqEQIPOdah0/S9H\nduQRl+RNvxfUYPF/+PeIhXrJzwKBgQC2mG8ELZ9ZcVzNmT5Cqy7Tv/0YO7ClTTmd\nSVYvSzH0l5Xft9r0SAxkMChTmW4J9MLyqxgAE9gnyaR6NhcUIpgUlZ7nXOIFVJ7s\nbBQrPAT1JLDdH9loq/lMm5joAMpNLFfyK6OLVIC3o44OM9t+3MDOYkn+WLG83Dw1\nJJufFh/k/QKBgFIXnmWF9iQGW8q+T5e0Gi8bxYm6qGd8VWAp3DyYqaB8wIDqijtY\n1EQFvcFQ/wxucJ53+n2yY2ha35/SyPX0SrLsOQhIUSNJyVmXR2AZfpsJduLe9cyR\nHH4y7u82k1fJJGarV9nn1QdKgkS9YVISfEJQYoHcZ8D5N8SgG4YXAN2jAoGAKq8H\nhJqFnYr6frVL8JnDoIxIxdluObYLudDi7LtPOjYVOu7nqCMPgnwfcSt0pa8pw0Br\no9j/to1UfZ0XWAWeN3Gia8MysrxNSkcZj+G/5u5kycwgLm/FHztgSxukLtYm2N2K\npY9jZ4o8MuW8cbN4/sXLNkHViqiRCns8RbwOSKECgYBxNwmOugZWQvKIBUWfQ2kp\n+WTIbpkYXbD2KT9Nsdp0QGwq8bNa7rr71QtYIKhjf91ENTbDUQ3aPvFdfdI+PkdX\nb5aDpkKH2tbPkpCtrGDfNwoMMQMHFwD/tiEndapuqhuoZcRByQb1NkaH/QrLufHz\nRMg0D/YNi/S7u3O/DwNi9g==\n-----END PRIVATE KEY-----\n",
+  "client_email": "sanyam-s-app@linear-cinema-310801.iam.gserviceaccount.com",
+  "client_id": "108716818543829431058",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sanyam-s-app%40linear-cinema-310801.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
