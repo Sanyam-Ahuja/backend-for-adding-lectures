@@ -1,62 +1,62 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, request, jsonify
-import psycopg2
+from supabase import create_client, Client
 from pytube import Playlist
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management and flashing messages
 
-def connect_to_db():
-    try:
-        connection = psycopg2.connect(
-            dbname='neondb',
-            user='neondb_owner',
-            password='F91ZkptcqXQm',
-            host='ep-winter-hat-a55yv5ct-pooler.us-east-2.aws.neon.tech',
-            sslmode='require'
-        )
-        return connection
-    except Exception as e:
-        print("Error connecting to the database:", e)
-        return None
+# Initialize Supabase client
+def init_supabase():
+    url = os.environ.get('https://ashrzqwhbvbxgrvvbxdr.supabase.co')
+    key = os.environ.get('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzaHJ6cXdoYnZieGdydnZieGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ2NzgwODYsImV4cCI6MjA0MDI1NDA4Nn0._HO8PGvO5YG5vVj-cJDJeT3eKL_6Ht6GVe987_xqoAY')
+    supabase: Client = create_client(url, key)
+    return supabase
 
-def get_or_create_subject(cursor, subject_name):
-    cursor.execute("SELECT id FROM Subjects WHERE name = %s", (subject_name,))
-    result = cursor.fetchone()
-    if result:
-        return result[0]
-    cursor.execute("INSERT INTO Subjects (name) VALUES (%s) RETURNING id", (subject_name,))
-    return cursor.fetchone()[0]
+supabase = init_supabase()
+
+def get_or_create_subject(supabase, subject_name):
+    # Check if subject exists
+    subject_query = supabase.from_("Subjects").select("id").eq("name", subject_name).execute()
+    if subject_query.data:
+        return subject_query.data[0]['id']
+    
+    # Insert new subject and get its ID
+    subject_insert = supabase.from_("Subjects").insert({"name": subject_name}).execute()
+    return subject_insert.data[0]['id']
 
 def process_playlist(subject_name, playlist_url, user_id):
     try:
-        connection = connect_to_db()
-        if connection is None:
-            return "Failed to connect to the database"
-
-        cursor = connection.cursor()
-        subject_id = get_or_create_subject(cursor, subject_name)
+        # Get or create the subject
+        subject_id = get_or_create_subject(supabase, subject_name)
         playlist = Playlist(playlist_url)
         chapter_name = playlist.title
 
-        cursor.execute(
-            "INSERT INTO Chapters (subject_id, name) VALUES (%s, %s) RETURNING id",
-            (subject_id, chapter_name)
-        )
-        chapter_id = cursor.fetchone()[0]
+        # Insert new chapter
+        chapter_insert = supabase.from_("Chapters").insert({
+            "subject_id": subject_id,
+            "name": chapter_name
+        }).execute()
+        chapter_id = chapter_insert.data[0]['id']
 
+        # Process each video in the playlist
+        lectures_to_insert = []
         for video in playlist.videos:
             lecture_name = video.title
             lecture_url = video.watch_url
             video_duration = video.length  # Duration in seconds
 
-            cursor.execute(
-                "INSERT INTO Lectures (chapter_id, user_id, name, file_path, watched, duration) VALUES (%s, %s, %s, %s, %s, %s)",
-                (chapter_id, user_id, lecture_name, lecture_url, False, video_duration)
-            )
+            lectures_to_insert.append({
+                "chapter_id": chapter_id,
+                "user_id": user_id,
+                "name": lecture_name,
+                "file_path": lecture_url,
+                "watched": False,
+                "duration": video_duration
+            })
 
-        connection.commit()
-        cursor.close()
-        connection.close()
+        # Bulk insert lectures
+        supabase.from_("Lectures").insert(lectures_to_insert).execute()
         return "Lectures added successfully"
     except Exception as e:
         print("Error processing playlist:", e)
