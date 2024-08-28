@@ -1,26 +1,37 @@
+import os
+import logging
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from supabase import create_client, Client
 from pytube import Playlist
-import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Required for session management and flashing messages
+app.secret_key = 'your_secret_key'
 
-# Initialize Supabase client
+# Set up basic logging
+logging.basicConfig(level=logging.DEBUG)
+
 def init_supabase():
-    url = 'https://ashrzqwhbvbxgrvvbxdr.supabase.co'
-    key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzaHJ6cXdoYnZieGdydnZieGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ2NzgwODYsImV4cCI6MjA0MDI1NDA4Nn0._HO8PGvO5YG5vVj-cJDJeT3eKL_6Ht6GVe987_xqoAY'
+    url = os.getenv('SUPABASE_URL', 'https://ashrzqwhbvbxgrvvbxdr.supabase.co')
+    key = os.getenv('SUPABASE_KEY', 'your_supabase_key')
     supabase: Client = create_client(url, key)
     return supabase
 
 supabase = init_supabase()
 
 def get_or_create_subject(supabase, subject_name):
-    subject_query = supabase.from_("Subjects").select("id").eq("name", subject_name).execute()
-    if subject_query.data:
-        return subject_query.data[0]['id']
-    subject_insert = supabase.from_("Subjects").insert({"name": subject_name}).execute()
-    return subject_insert.data[0]['id']
+    logging.debug(f"Attempting to find or create subject: {subject_name}")
+    try:
+        subject_query = supabase.from_("Subjects").select("id").eq("name", subject_name).execute()
+        if subject_query.data:
+            logging.debug(f"Found subject: {subject_name} with ID {subject_query.data[0]['id']}")
+            return subject_query.data[0]['id']
+        
+        subject_insert = supabase.from_("Subjects").insert({"name": subject_name}).execute()
+        logging.debug(f"Created subject: {subject_name} with ID {subject_insert.data[0]['id']}")
+        return subject_insert.data[0]['id']
+    except Exception as e:
+        logging.error(f"Error in get_or_create_subject: {e}")
+        raise
 
 def process_playlist(subject_name, playlist_url):
     try:
@@ -48,9 +59,10 @@ def process_playlist(subject_name, playlist_url):
             })
 
         supabase.from_("Lectures").insert(lectures_to_insert).execute()
+        logging.debug("Lectures added successfully")
         return "Lectures added successfully"
     except Exception as e:
-        print("Error processing playlist:", e)
+        logging.error(f"Error processing playlist: {e}")
         return "Failed to process playlist"
 
 @app.route('/', methods=['GET', 'POST'])
@@ -66,5 +78,5 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 4000))  # Default to 4000 if PORT not set
+    port = int(os.environ.get('PORT', 4000))
     app.run(debug=True, host='0.0.0.0', port=port)
