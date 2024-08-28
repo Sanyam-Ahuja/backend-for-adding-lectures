@@ -8,8 +8,9 @@ app.secret_key = 'your_secret_key'  # Required for session management and flashi
 
 # Initialize Supabase client
 def init_supabase():
-    url = os.environ.get('https://ashrzqwhbvbxgrvvbxdr.supabase.co')
-    key = os.environ.get('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzaHJ6cXdoYnZieGdydnZieGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ2NzgwODYsImV4cCI6MjA0MDI1NDA4Nn0._HO8PGvO5YG5vVj-cJDJeT3eKL_6Ht6GVe987_xqoAY')
+    # Directly use the strings or use environment variables
+    url = 'https://ashrzqwhbvbxgrvvbxdr.supabase.co'
+    key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzaHJ6cXdoYnZieGdydnZieGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ2NzgwODYsImV4cCI6MjA0MDI1NDA4Nn0._HO8PGvO5YG5vVj-cJDJeT3eKL_6Ht6GVe987_xqoAY'
     supabase: Client = create_client(url, key)
     return supabase
 
@@ -25,7 +26,7 @@ def get_or_create_subject(supabase, subject_name):
     subject_insert = supabase.from_("Subjects").insert({"name": subject_name}).execute()
     return subject_insert.data[0]['id']
 
-def process_playlist(subject_name, playlist_url, user_id):
+def process_playlist(subject_name, playlist_url):
     try:
         # Get or create the subject
         subject_id = get_or_create_subject(supabase, subject_name)
@@ -48,10 +49,8 @@ def process_playlist(subject_name, playlist_url, user_id):
 
             lectures_to_insert.append({
                 "chapter_id": chapter_id,
-                "user_id": user_id,
                 "name": lecture_name,
                 "file_path": lecture_url,
-                "watched": False,
                 "duration": video_duration
             })
 
@@ -67,9 +66,8 @@ def index():
     if request.method == 'POST':
         subject_name = request.form['subject_name']
         playlist_url = request.form['playlist_url']
-        user_id = request.form['user_id']
 
-        message = process_playlist(subject_name, playlist_url, user_id)
+        message = process_playlist(subject_name, playlist_url)
         flash(message)
         return redirect(url_for('index'))
 
