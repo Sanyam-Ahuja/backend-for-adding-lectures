@@ -11,8 +11,8 @@ app.secret_key = 'your_secret_key'
 logging.basicConfig(level=logging.DEBUG)
 
 def init_supabase():
-    url = os.getenv('SUPABASE_URL', 'https://ashrzqwhbvbxgrvvbxdr.supabase.co')
-    key = os.getenv('SUPABASE_KEY', 'your_supabase_key')
+    url =  'https://ashrzqwhbvbxgrvvbxdr.supabase.co'
+    key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzaHJ6cXdoYnZieGdydnZieGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ2NzgwODYsImV4cCI6MjA0MDI1NDA4Nn0._HO8PGvO5YG5vVj-cJDJeT3eKL_6Ht6GVe987_xqoAY'
     supabase: Client = create_client(url, key)
     return supabase
 
