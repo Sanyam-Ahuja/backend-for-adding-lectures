@@ -2,7 +2,7 @@ import os
 import logging
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from supabase import create_client, Client
-from pytube import Playlist
+from yt_dlp import YoutubeDL
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -35,35 +35,48 @@ def get_or_create_subject(supabase, subject_name):
 
 def process_playlist(subject_name, playlist_url):
     try:
+        # Get or create subject
         subject_id = get_or_create_subject(supabase, subject_name)
-        playlist = Playlist(playlist_url)
-        chapter_name = playlist.title
 
+        # Use yt-dlp to fetch playlist info (without downloading)
+        ydl_opts = {
+            'quiet': True,
+            'extract_flat': True,  # don't resolve each video fully
+            'dump_single_json': True
+        }
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(playlist_url, download=False)
+
+        chapter_name = info.get('title', 'Unknown Playlist')
+
+        # Insert chapter into Supabase
         chapter_insert = supabase.from_("Chapters").insert({
             "subject_id": subject_id,
             "name": chapter_name
         }).execute()
         chapter_id = chapter_insert.data[0]['id']
 
+        # Prepare lecture entries
         lectures_to_insert = []
-        for video in playlist.videos:
-            lecture_name = video.title
-            lecture_url = video.watch_url
-            video_duration = video.length
-
+        for entry in info.get('entries', []):
             lectures_to_insert.append({
                 "chapter_id": chapter_id,
-                "name": lecture_name,
-                "file_path": lecture_url,
-                "duration": video_duration
+                "name": entry.get("title", "Unknown Video"),
+                "file_path": f"https://www.youtube.com/watch?v={entry['id']}",
+                "duration": entry.get("duration") or 0  # yt-dlp sometimes gives seconds
             })
 
-        supabase.from_("Lectures").insert(lectures_to_insert).execute()
-        logging.debug("Lectures added successfully")
-        return "Lectures added successfully"
+        if lectures_to_insert:
+            supabase.from_("Lectures").insert(lectures_to_insert).execute()
+            logging.debug("Lectures added successfully")
+            return "Lectures added successfully"
+        else:
+            return "No lectures found in playlist"
+
     except Exception as e:
         logging.error(f"Error processing playlist: {e}")
         return "Failed to process playlist"
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
